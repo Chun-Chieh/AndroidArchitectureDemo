@@ -1,5 +1,5 @@
-# Android Architecure Examples
----
+# Android Architecture Examples
+
 - [Room](#room) (android.arch.persistence): Implement local database to persist data.
 - [LiveData](#livedata) (android.arch.lifecycle): Get Notified when there are changes in the database in order to update the UI without being constantly query the database. 
 - [ViewModel](#viewmodel) (android.arch.lifecycle) Cache out LiveData objects so they survive to configuration changes.
@@ -18,7 +18,7 @@
 
 
 # Room
----
+
 
 ### Setup
 1. Add the dependency in ```build.gradle```. ([link][room])
@@ -183,7 +183,7 @@ books.observe(this, new Observer<List<Book>>(){
 ```
 
 # ViewModel
----
+
 The activities are destroyed and recreated when the device is being rotated. In other words, The operations in ```onCreate()``` will be called again such as creating a object of ```LiveData```. The usual approach is to use ```onSaveInstanceState()```. However, it's only suitable for a small amount of data that can be easily **serialize** and **deserialize**. In this case, ```ViewModel``` allows data to survive to configuration changes such as *rotation*.
 
 In some cases, asynchronous calls are triggered to retrieve data. It will casue **memory leaks** if the activity is destroyed before the calls finish. To avoid memory leaks, the asynchronous calls can be made from the ```ViewModel```. The result will be delivered back to the ```ViewModel``` instaed of the Activity.
