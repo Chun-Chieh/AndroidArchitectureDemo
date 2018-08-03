@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Android Architecure Example</string>
+
+    <string name="item_removed_string">%s is removed from the list!</string>
+    <string name="undo_string">undo</string>
+
+
+    <string name="book_title_label">Title</string>
+    <string name="book_author_label">Author</string>
+    <string name="add_new_book">Add New Book</string>
+</resources>
