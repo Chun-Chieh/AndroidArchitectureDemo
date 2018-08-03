@@ -20,7 +20,7 @@ import java.util.Locale;
  */
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
 
-    private static final String DATE_FORMAT = "dd/MM/yyy";
+    private static final String DATE_FORMAT = "MM/dd/yyyy";
 
     private Context mContext;
     private List<Book> mBookList;
@@ -55,6 +55,9 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
+        if (mBookList == null) {
+            return 0;
+        }
         return mBookList.size();
     }
 

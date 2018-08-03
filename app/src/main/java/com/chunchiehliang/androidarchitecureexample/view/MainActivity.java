@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
+import com.chunchiehliang.androidarchitecureexample.AppExecutors;
 import com.chunchiehliang.androidarchitecureexample.R;
 import com.chunchiehliang.androidarchitecureexample.database.AppDatabase;
 import com.chunchiehliang.androidarchitecureexample.model.Book;
@@ -68,7 +69,13 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter.notifyItemRemoved(position);
 
                 // Delete the item from the database
-                AppDatabase.getInstance(getApplicationContext()).bookDao().deleteBook(removedBook);
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        AppDatabase.getInstance(getApplicationContext()).bookDao().deleteBook(removedBook);
+                    }
+                });
+
 
                 Snackbar mSnackBar = Snackbar.make(findViewById(R.id.coordinator_main), getString(R.string.item_removed_string, removedBook.getTitle()), Snackbar.LENGTH_LONG);
                 mSnackBar.setAction(R.string.undo_string, new View.OnClickListener() {
@@ -78,7 +85,13 @@ public class MainActivity extends AppCompatActivity {
                         mAdapter.notifyItemInserted(position);
 
                         // Add it back to the database
-                        AppDatabase.getInstance(getApplicationContext()).bookDao().insertBook(removedBook);
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                AppDatabase.getInstance(getApplicationContext()).bookDao().insertBook(removedBook);
+                            }
+                        });
+
                     }
                 });
 
@@ -139,7 +152,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadBooks() {
-        bookList = AppDatabase.getInstance(getApplicationContext()).bookDao().loadAllBooks();
-        mAdapter.setBookList(bookList);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                bookList = AppDatabase.getInstance(getApplicationContext()).bookDao().loadAllBooks();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.setBookList(bookList);
+                    }
+                });
+            }
+        });
+
+
     }
 }

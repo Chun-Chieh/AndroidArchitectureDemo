@@ -22,7 +22,7 @@
         android:id="@+id/tv_book_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tv_pub_date_label"
         app:layout_constraintTop_toTopOf="parent"

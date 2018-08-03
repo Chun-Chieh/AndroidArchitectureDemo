@@ -9,6 +9,9 @@
     <string name="book_author_label">Author</string>
     <string name="book_pub_date_label">Publication Date</string>
     <string name="book_pub_date_label_short">Pub. Date</string>
+    <string name="book_pub_date_input_hint">Publication Date (MM/DD/YYYY)</string>
 
     <string name="add_new_book">Add New Book</string>
+
+    <string name="no_input_error_message">This field can\'t be blank!</string>
 </resources>

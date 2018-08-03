@@ -1,4 +1,4 @@
-# Android Architecture Examples
+# Android Architecture Learning Notes
 
 - [Room](#room) (android.arch.persistence): Implement local database to persist data.
 - [LiveData](#livedata) (android.arch.lifecycle): Get Notified when there are changes in the database in order to update the UI without being constantly query the database. 
@@ -116,7 +116,9 @@ mAdapter.setBookList(mDb.bookDao().loadAllBooks());
 ```
 ### Thread-handling
 
-Since Room operations are forbidden in Main UI thread, it's necessary to handle by creating new worker thread.
+To use ```Room``` on main thread, you have to add ```.allowMainThreadQueries()```. 
+
+To avoid freezing in main thread, it's better to handle by creating new worker thread.
 ```java
 new Thread(new Runnable() {
     @Override
@@ -133,7 +135,18 @@ new Thread(new Runnable() {
     }
 }).start();
 ```
-However, this approach may cause race condition. It'd better to create a class as ```Executor``` pools for the whole application.
+However, this approach may cause race condition. One of the best ways is to create a class as ```Executor``` pools for the whole application.
+
+### Executor
+
+An ```Executor``` is an object that executes submitted ```Runnable``` tasks. Instead of creating new ```Thread``` explicitly, it might be used as the following.
+
+```java
+Executor executor = anExecutor(); 
+executor.execute(new RunnableTask1()); 
+executor.execute(new RunnableTask2()); ...
+``` 
+
 
 # LiveData
 
