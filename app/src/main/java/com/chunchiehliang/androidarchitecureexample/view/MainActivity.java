@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +16,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import com.chunchiehliang.androidarchitecureexample.R;
+import com.chunchiehliang.androidarchitecureexample.database.AppDatabase;
 import com.chunchiehliang.androidarchitecureexample.model.Book;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,28 +37,38 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadBooks();
 
         iniViews();
+        loadBooks();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadBooks();
     }
 
     private void iniViews() {
-        mAdapter = new BookAdapter(bookList);
-
         mRecyclerView = findViewById(R.id.recycler_view_main);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        mAdapter = new BookAdapter(this);
+
         mRecyclerView.setAdapter(mAdapter);
 
         // Swipe to delete
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 final int position = viewHolder.getAdapterPosition();
                 final Book removedBook = bookList.remove(position);
                 mAdapter.notifyItemRemoved(position);
+
+                // Delete the item from the database
+                AppDatabase.getInstance(getApplicationContext()).bookDao().deleteBook(removedBook);
 
                 Snackbar mSnackBar = Snackbar.make(findViewById(R.id.coordinator_main), getString(R.string.item_removed_string, removedBook.getTitle()), Snackbar.LENGTH_LONG);
                 mSnackBar.setAction(R.string.undo_string, new View.OnClickListener() {
@@ -65,18 +76,32 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         bookList.add(position, removedBook);
                         mAdapter.notifyItemInserted(position);
+
+                        // Add it back to the database
+                        AppDatabase.getInstance(getApplicationContext()).bookDao().insertBook(removedBook);
+                    }
+                });
+
+
+                mSnackBar.addCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar transientBottomBar, int event) {
+                        super.onDismissed(transientBottomBar, event);
+
+
                     }
                 });
                 mSnackBar.show();
+
             }
 
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
             @Override
-            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 if (viewHolder.getAdapterPosition() == -1) {
                     return;
                 }
@@ -114,8 +139,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadBooks() {
-        bookList = new ArrayList<>();
-        bookList.add(new Book("Harry Potter", "JK Rowling"));
-        bookList.add(new Book("Life", "Forrest Gump"));
+        bookList = AppDatabase.getInstance(getApplicationContext()).bookDao().loadAllBooks();
+        mAdapter.setBookList(bookList);
     }
 }

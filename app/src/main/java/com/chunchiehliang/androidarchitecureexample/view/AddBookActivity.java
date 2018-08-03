@@ -8,6 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.chunchiehliang.androidarchitecureexample.R;
+import com.chunchiehliang.androidarchitecureexample.database.AppDatabase;
+import com.chunchiehliang.androidarchitecureexample.model.Book;
+
+import java.util.Date;
 
 public class AddBookActivity extends AppCompatActivity {
 
@@ -16,12 +20,20 @@ public class AddBookActivity extends AppCompatActivity {
     private Button mBtnAddBook;
     private EditText mEditTextTitle, mEditTextAuthor;
 
+    private AppDatabase mDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_book);
 
+        initDb();
         initView();
+    }
+
+
+    private void initDb(){
+        mDb = AppDatabase.getInstance(getApplicationContext());
     }
 
     private void initView() {
@@ -36,11 +48,9 @@ public class AddBookActivity extends AppCompatActivity {
                 String title = mEditTextTitle.getText().toString();
                 String author = mEditTextAuthor.getText().toString();
 
-                Log.d(TAG, "Title: " + title + ", Author: " + author);
+                mDb.bookDao().insertBook(new Book(title, author, new Date()));
 
                 finish();
-
-
             }
         });
     }

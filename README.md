@@ -47,7 +47,9 @@ public class Book {
 	@ColumnInfo(name = "book_title")
     private String title;
     @ColumnInfo(name = "book_author")
-    private int author;
+    private String author;
+    @ColumnInfo(name = "book_publication_date")
+    private Date publicationDate;
     // ...
     }
  ```
@@ -72,7 +74,7 @@ public abstract class AppDatabase extends RoomDatabase {
 @Dao
 public interface BookDao {
 
-    @Query("SELECT * FROM book ORDER BY book_author")
+    @Query("SELECT * FROM book ORDER BY book_publication_date")
 	List<Book> loadAllBooks();
     
     @Insert
@@ -85,7 +87,7 @@ public interface BookDao {
     void deleteBook(Book book);
     
     @Query("SELECT * FROM book WHERE id = :id")
-    Book loadTaskById(int id);
+    Book loadBookById(int id);
 }
 ```
 6. Create a public abstract method in the class created in step 1 (usually called "AppDatabase")
@@ -134,7 +136,6 @@ new Thread(new Runnable() {
 However, this approach may cause race condition. It'd better to create a class as ```Executor``` pools for the whole application.
 
 # LiveData
----
 
 ```LiveData``` sits between UI and database. It can monitor changes in the database and notify the observers when data changes. This design pattern is called **Observer**.
 
