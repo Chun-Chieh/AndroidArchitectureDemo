@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.AddEventActivity">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_layout_title"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/md_16dp"
+        android:layout_marginStart="@dimen/md_16dp"
+        android:layout_marginTop="@dimen/md_16dp"
+        app:boxCornerRadiusTopEnd="@dimen/corner_radius_8dp"
+        app:boxCornerRadiusTopStart="@dimen/corner_radius_8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:errorEnabled="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/et_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:hint="@string/event_title_label" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_layout_description"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/md_16dp"
+        android:layout_marginStart="@dimen/md_16dp"
+        android:layout_marginTop="@dimen/md_16dp"
+        app:boxCornerRadiusTopEnd="@dimen/corner_radius_8dp"
+        app:boxCornerRadiusTopStart="@dimen/corner_radius_8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_title"
+        app:errorEnabled="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/et_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:hint="@string/event_description_label" />
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_layout_date"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/md_8dp"
+        android:layout_marginStart="@dimen/md_16dp"
+        android:layout_marginTop="@dimen/md_16dp"
+        app:boxCornerRadiusTopEnd="@dimen/corner_radius_8dp"
+        app:boxCornerRadiusTopStart="@dimen/corner_radius_8dp"
+        app:layout_constraintEnd_toStartOf="@+id/image_date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_description"
+        app:errorEnabled="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/et_pub_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:hint="@string/date_input_hint"
+            android:inputType="date"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/image_date"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="@dimen/md_16dp"
+        android:layout_marginBottom="@dimen/md_16dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_date"
+        android:tint="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/text_input_layout_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_date" />
+
+
+    <android.support.design.button.MaterialButton
+        android:id="@+id/btn_add_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/md_16dp"
+        android:text="@string/add_event"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_date" />
+
+</android.support.constraint.ConstraintLayout>
