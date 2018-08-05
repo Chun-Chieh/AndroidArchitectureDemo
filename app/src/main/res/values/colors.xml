@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#3490f2</color>
+    <color name="colorPrimaryDark">#2b5fbe</color>
+    <color name="colorPrimaryLight">#eeeeee</color>
+    <color name="colorAccent">#f29634</color>
 
     <color name="colorWhite">#FFF</color>
+    <color name="colorBlack">#000</color>
+
+    <color name="textColorTitle">#232F34</color>
+    <color name="textColorDetails">#B4BAC0</color>
+
+    <color name="materialRed">#E74C3C</color>
+    <color name="materialOrange">#E67E22</color>
+    <color name="materialYellow">#F1C40F</color>
+    <color name="materialGreen">#2ECC71</color>
+    <color name="materialCyan">#1ABC9C</color>
+    <color name="materialBlue">#3498DB</color>
+
+
+    <color name="colorDefault">#4A7BA7</color>
+    <color name="color6Month">#04B4B3</color>
+    <color name="color2Month">#10CAC9</color>
+    <color name="color1Month">#F5A623</color>
+    <color name="color3Week">#FF7D50</color>
+    <color name="color2Week">#FC6644</color>
+    <color name="color1Week">#E75F40</color>
+    <color name="color3Day">#E13A20</color>
+    <color name="colorToday">#D93218</color>
+    <color name="colorPast">#C03823</color>
+
+
 </resources>

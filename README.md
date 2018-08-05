@@ -40,7 +40,7 @@ public abstract class AppDatabase extends RoomDatabase {
 ```
 3. Annotate the POJO model class as ```@Entity```.
 ```java
-@Entity(tableName = "book")
+@Entity(tableName = "event")
 public class Book {
     @PrimaryKey(autoGenerate = true)
 	private int id;
@@ -74,19 +74,19 @@ public abstract class AppDatabase extends RoomDatabase {
 @Dao
 public interface BookDao {
 
-    @Query("SELECT * FROM book ORDER BY book_publication_date")
+    @Query("SELECT * FROM event ORDER BY book_publication_date")
 	List<Book> loadAllBooks();
     
     @Insert
-    void insertBook(Book book);
+    void insertBook(Book event);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    void updateBook(Book book);
+    void updateBook(Book event);
 
     @Delete
-    void deleteBook(Book book);
+    void deleteBook(Book event);
     
-    @Query("SELECT * FROM book WHERE id = :id")
+    @Query("SELECT * FROM event WHERE id = :id")
     Book loadBookById(int id);
 }
 ```
@@ -109,7 +109,7 @@ mDb = AppDatabase.getInstance(getApplicationContext());
 ```
 2. Perform operations defined in Dao
 ```java
-mDb.bookDao().insertTask(book);
+mDb.bookDao().insertTask(event);
 ...
 mAdapter.setBookList(mDb.bookDao().loadAllBooks());
 ...
@@ -167,31 +167,31 @@ dependencies {
 ```
 
 ### Usage
-1. Wrap the return type with ```LiveData``` and remove the ```Executor```
+1. Wrap the return type with ```LiveData``` and remove the ```Executor``` where you read from database.
 
 **In BookDao:**
 ```java
 @Dao
 public interface BookDao {
-    @Query("SELECT * FROM book ORDER BY book_author")
+    @Query("SELECT * FROM event ORDER BY book_author")
     LiveData<List<Book>> loadAllBooks();
     
-    @Query("SELECT * FROM book WHERE id = :id")
+    @Query("SELECT * FROM event WHERE id = :id")
     LiveData<Book> loadBookById(int id);
     // ...
 }
 ```
 **In Activity where retrieve the data:**
 ```java
-final LiveData<List<Book>> books = mDb.bookDao().loadAllBooks();
+final LiveData<List<Book>> events = mDb.bookDao().loadAllBooks();
 ```
 
-2. Add ```observe(LifecycleOwner, Observer)``` and implements the 2nd parameter, **Observer**. ```onChanged()``` will handle the logic of updating the UI. Also, ```observe()``` shall be called in ```OnCreate```.
+2. Add ```observe(LifecycleOwner, Observer)``` and implement the 2nd parameter, **Observer**. ```onChanged()``` will handle the logic of updating the UI. Also, ```observe()``` shall be called in ```OnCreate```.
 ```java
-books.observe(this, new Observer<List<Book>>(){
+events.observe(this, new Observer<List<Book>>(){
     @Override
-    public void onChanged(@Nullable List<Book> books) {
-        mAdapter.setBooks(books);
+    public void onChanged(@Nullable List<Book> events) {
+        mAdapter.setBooks(events);
     }
 });
 ```
@@ -220,13 +220,13 @@ public class MainViewModel extends AndroidViewModel{
 ```
 2. Create private variables in the ViewModel.
 ```java
-private LiveData<List<Book>> books;
+private LiveData<List<Book>> events;
 ```
 
 3. Create public getters for the variables.
 ```java
 public LiveData<List<Book>> getBooks() {
-        return books;
+        return events;
 }
 ```
 
@@ -234,7 +234,7 @@ public LiveData<List<Book>> getBooks() {
 ```java
 public MainViewModel(@NonNull Application application) {
     super(application);
-    books = AppDatabase.getInstance(this.getApplication()).bookDao().loadAllBooks();
+    events = AppDatabase.getInstance(this.getApplication()).bookDao().loadAllBooks();
 }
 ```
 5. Call ViewModel's providers for the Activity.
@@ -249,7 +249,7 @@ private void setupViewModel() {
     MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
     viewModel.getTasks().observe(this, new Observer<List<Book>>() {
         @Override
-        public void onChanged(@Nullable List<Book> books) {
+        public void onChanged(@Nullable List<Book> events) {
             // Update UI...
         }
     });
@@ -258,7 +258,7 @@ private void setupViewModel() {
 
 ### Use Case
 
-If you need to pass values to the ViewModel, you'll need to create a ViewModel factory class. For instance, you want to **update** a book information in an activity, then you need to load the book information by **querying the ID** first.
+If you need to pass values to the ViewModel, you'll need to create a ViewModel factory class. For instance, you want to **update** a event information in an activity, then you need to load the event information by **querying the ID** first.
 ##### AddBookViewModelFactory
 1. Create a class extends ```ViewModelProvider.NewInstanceFactory```
 \* Not ViewModelProvider***s***
@@ -313,30 +313,30 @@ public class AddBookViewModelFactory extends ViewModelProvider.NewInstanceFactor
 2. Add member variables in which wrapped in LiveData and public getters for the variables.
 ```java
 public class AddBookViewModel extends ViewModel {
-    private LiveData<Book> book;
+    private LiveData<Book> event;
 
     public LiveData<Book> getBook() {
-        return book;
+        return event;
     }
 }
 ```
 3. Intialize the variables in the constructor with relavent calls, such as database call.
 ```java
 public AddBookViewModel(AppDatabase database, int bookId){
-    book = database.bookDao().loadBookById(bookId);
+    event = database.bookDao().loadBookById(bookId);
 }
 ```
 The **AddBookViewModel** could look like the following.
 ```java
 public class AddBookViewModel extends ViewModel {
-    private LiveData<Book> book;
+    private LiveData<Book> event;
 
     public AddBookViewModel(AppDatabase database, int bookId){
-        book = database.bookDao().loadbookById(bookId);
+        event = database.bookDao().loadbookById(bookId);
     }
     
     public LiveData<Book> getBook() {
-        return book;
+        return event;
     }
 }
 ```
@@ -354,7 +354,7 @@ AddBookViewModel viewModel = ViewModelProviders.of(this, factory).get(AddBookVie
 ```java
 viewModel.getBook().observe(this, new Observer<Book>() {
     @Override
-    public void onChanged(@Nullable Book book) {
+    public void onChanged(@Nullable Book event) {
         viewModel.getBook().removeObserver(this);
         // update UI
     }
@@ -375,9 +375,9 @@ public void onCreate (Bundle savedInstanceState){
             
             viewModel.getBook().observe(this, new Observer<Book>() {
                 @Override
-                public void onChanged(@Nullable Book book) {
+                public void onChanged(@Nullable Book event) {
                     viewModel.getBook().removeObserver(this);
-                    populateUI(book);
+                    populateUI(event);
                 }
             });
         }

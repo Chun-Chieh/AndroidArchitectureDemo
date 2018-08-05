@@ -6,18 +6,18 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
-import com.chunchiehliang.androidarchitecureexample.model.Book;
+import com.chunchiehliang.androidarchitecureexample.model.Event;
 
 /**
  * @author Chun-Chieh Liang on 8/2/18.
  */
-@Database(entities = {Book.class}, version = 1, exportSchema = false)
+@Database(entities = {Event.class}, version = 1, exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final Object LOCK = new Object();
-    private static final String DATABASE_NAME = "Library";
+    private static final String DATABASE_NAME = "EventCountdown";
     private static AppDatabase sInstance;
 
     public static AppDatabase getInstance(Context context) {
@@ -32,5 +32,5 @@ public abstract class AppDatabase extends RoomDatabase {
         return sInstance;
     }
 
-    public abstract BookDao bookDao();
+    public abstract EventDao eventDao();
 }

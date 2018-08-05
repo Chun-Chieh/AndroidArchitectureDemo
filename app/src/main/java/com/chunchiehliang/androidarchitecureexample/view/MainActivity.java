@@ -2,36 +2,36 @@ package com.chunchiehliang.androidarchitecureexample.view;
 
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+import android.widget.Toast;
 
 import com.chunchiehliang.androidarchitecureexample.AppExecutors;
 import com.chunchiehliang.androidarchitecureexample.R;
 import com.chunchiehliang.androidarchitecureexample.database.AppDatabase;
-import com.chunchiehliang.androidarchitecureexample.model.Book;
+import com.chunchiehliang.androidarchitecureexample.model.Event;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EventAdapter.ItemClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
     private FloatingActionButton mFab;
 
-    private BookAdapter mAdapter;
+    private EventAdapter mAdapter;
 
-    private List<Book> bookList;
+    private List<Event> eventList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,22 +40,21 @@ public class MainActivity extends AppCompatActivity {
 
 
         iniViews();
-        loadBooks();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadBooks();
+        loadEvents();
     }
 
     private void iniViews() {
         mRecyclerView = findViewById(R.id.recycler_view_main);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new MarginItemDecoration((int) (getResources().getDimension(R.dimen.md_16dp) / getResources().getDisplayMetrics().density)));
 
-        mAdapter = new BookAdapter(this);
+        mAdapter = new EventAdapter(this, this);
 
         mRecyclerView.setAdapter(mAdapter);
 
@@ -65,36 +64,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 final int position = viewHolder.getAdapterPosition();
-                final Book removedBook = bookList.remove(position);
+                final Event removedEvent = eventList.remove(position);
                 mAdapter.notifyItemRemoved(position);
 
                 // Delete the item from the database
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
-                        AppDatabase.getInstance(getApplicationContext()).bookDao().deleteBook(removedBook);
+                        AppDatabase.getInstance(getApplicationContext()).eventDao().deleteEvent(removedEvent);
                     }
                 });
 
 
-                Snackbar mSnackBar = Snackbar.make(findViewById(R.id.coordinator_main), getString(R.string.item_removed_string, removedBook.getTitle()), Snackbar.LENGTH_LONG);
+                Snackbar mSnackBar = Snackbar.make(findViewById(R.id.coordinator_main), getString(R.string.item_removed_string, removedEvent.getTitle()), Snackbar.LENGTH_LONG);
                 mSnackBar.setAction(R.string.undo_string, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        bookList.add(position, removedBook);
+                        eventList.add(position, removedEvent);
                         mAdapter.notifyItemInserted(position);
 
                         // Add it back to the database
                         AppExecutors.getInstance().diskIO().execute(new Runnable() {
                             @Override
                             public void run() {
-                                AppDatabase.getInstance(getApplicationContext()).bookDao().insertBook(removedBook);
+                                AppDatabase.getInstance(getApplicationContext()).eventDao().insertEvent(removedEvent);
                             }
                         });
-
                     }
                 });
-
 
                 mSnackBar.addCallback(new Snackbar.Callback() {
                     @Override
@@ -105,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 mSnackBar.show();
-
             }
 
             @Override
@@ -118,12 +114,12 @@ public class MainActivity extends AppCompatActivity {
                 if (viewHolder.getAdapterPosition() == -1) {
                     return;
                 }
-                final ColorDrawable background = new ColorDrawable(Color.RED);
-                background.setBounds((int) (viewHolder.itemView.getRight() + dX),
+                final ColorDrawable backgroundDelete = new ColorDrawable(getColor(R.color.materialRed));
+                backgroundDelete.setBounds((int) (viewHolder.itemView.getRight() + dX),
                         viewHolder.itemView.getTop(),
                         viewHolder.itemView.getRight(),
                         viewHolder.itemView.getBottom());
-                background.draw(c);
+                backgroundDelete.draw(c);
 
 //                final Drawable icon = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_launcher_foreground);
 //                int itemHeight = viewHolder.itemView.getBottom() - viewHolder.itemView.getTop();
@@ -145,27 +141,71 @@ public class MainActivity extends AppCompatActivity {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddBookActivity.class);
+                Intent intent = new Intent(MainActivity.this, AddEventActivity.class);
                 startActivity(intent);
             }
         });
     }
 
-    private void loadBooks() {
+    private void loadEvents() {
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                bookList = AppDatabase.getInstance(getApplicationContext()).bookDao().loadAllBooks();
+                eventList = AppDatabase.getInstance(getApplicationContext()).eventDao().loadAllEvents();
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mAdapter.setBookList(bookList);
+                        mAdapter.setEventList(eventList);
                     }
                 });
             }
         });
+    }
 
+    @Override
+    public void onItemClickListener(int itemId) {
+        Toast.makeText(MainActivity.this, "click listener, event ID:" + itemId, Toast.LENGTH_SHORT).show();
+    }
 
+    @Override
+    public void onItemLongClickListener(Event event) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+
+                if (event.isBookmarked()) {
+                    event.setBookmarked(false);
+                } else {
+                    event.setBookmarked(true);
+                }
+                AppDatabase.getInstance(getApplicationContext()).eventDao().updateEvent(event);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+    }
+
+    private class MarginItemDecoration extends RecyclerView.ItemDecoration {
+        private int margin;
+
+        MarginItemDecoration(int margin) {
+            this.margin = margin;
+        }
+
+        @Override
+        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            if (parent.getChildAdapterPosition(view) == 0) {
+                outRect.top = margin;
+            }
+            outRect.bottom = margin;
+            outRect.left = margin;
+            outRect.right = margin;
+        }
     }
 }

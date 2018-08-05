@@ -1,17 +1,25 @@
 <resources>
-    <string name="app_name">Android Architecure Example</string>
+    <string name="app_name">Event Countdown</string>
 
     <string name="item_removed_string">%s is removed from the list!</string>
     <string name="undo_string">undo</string>
 
+    <string name="event_book_mark">Bookmark</string>
+    <string name="event_title_label">Title</string>
+    <string name="event_description_label">Description</string>
+    <string name="event_date_label">Date</string>
 
-    <string name="book_title_label">Title</string>
-    <string name="book_author_label">Author</string>
-    <string name="book_pub_date_label">Publication Date</string>
-    <string name="book_pub_date_label_short">Pub. Date</string>
-    <string name="book_pub_date_input_hint">Publication Date (MM/DD/YYYY)</string>
+    <string name="date_input_hint">Date (MM/DD/YYYY)</string>
+    <string name="add_event">Add Event</string>
+    <string name="error_message_no_input">This field can\'t be blank!</string>
+    <string name="error_message_invalid_date">Invalid date. Try again!</string>
 
-    <string name="add_new_book">Add New Book</string>
 
-    <string name="no_input_error_message">This field can\'t be blank!</string>
+    <string name="day_today">Today</string>
+    <string name="day_past">Expired</string>
+    <plurals name="remain_day">
+        <item quantity="zero">Today</item>
+        <item quantity="one">Tomorrow</item>
+        <item quantity="other">%d Days</item>
+    </plurals>
 </resources>
