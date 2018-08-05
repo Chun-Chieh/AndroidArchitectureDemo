@@ -1,10 +1,10 @@
-package com.chunchiehliang.androidarchitecureexample.view;
+package com.chunchiehliang.androidarchitecureexample.ui;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @author Chun-Chieh Liang on 8/1/18.
@@ -39,7 +40,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
 
 
-    EventAdapter(Context context, ItemClickListener clickListener) {
+    public EventAdapter(Context context, ItemClickListener clickListener) {
         mContext = context;
         mItemClickListener = clickListener;
     }
@@ -47,7 +48,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     @NonNull
     @Override
     public EventAdapter.EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
-                                                      int viewType) {
+                                                           int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_event, parent, false);
         return new EventViewHolder(view);
     }
@@ -73,10 +74,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     @Override
     public int getItemCount() {
-        if (mEventList == null) {
-            return 0;
-        }
-        return mEventList.size();
+        return mEventList == null ? 0 : mEventList.size();
     }
 
 
@@ -85,14 +83,45 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     }
 
 
-    public void setEventList(List<Event> events) {
-        mEventList = events;
-        notifyDataSetChanged();
+    public void setEventList(List<Event> eventList) {
+        if (mEventList == null) {
+            mEventList = eventList;
+            notifyItemRangeInserted(0, eventList.size());
+        } else {
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return mEventList.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return eventList.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return mEventList.get(oldItemPosition).getId() ==
+                            eventList.get(newItemPosition).getId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    Event newEvent = eventList.get(newItemPosition);
+                    Event oldEvent = mEventList.get(oldItemPosition);
+                    return newEvent.getId() == oldEvent.getId()
+                            && Objects.equals(newEvent.getTitle(), oldEvent.getTitle())
+                            && Objects.equals(newEvent.getDescription(), oldEvent.getDescription())
+                            && newEvent.getDate() == oldEvent.getDate();
+                }
+            });
+            mEventList = eventList;
+            result.dispatchUpdatesTo(this);
+        }
     }
 
 
     private int getDayDiff(Date eventDate) {
-
         Calendar currentCal = Calendar.getInstance();
         currentCal.setTime(new Date());
         currentCal.set(Calendar.HOUR_OF_DAY, 0);
@@ -102,10 +131,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         long unit = 1000 * 60 * 60 * 24;
         long dayDiff = (eventDate.getTime() - currentCal.getTime().getTime()) / unit;
-        Log.d("Adapter", "Result : " + dayDiff);
         return (int) dayDiff;
     }
-
 
     private String getDayString(int dayDiff) {
 
@@ -178,7 +205,5 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             mItemClickListener.onItemLongClickListener(event);
             return true;
         }
-
-
     }
 }

@@ -1,11 +1,14 @@
-package com.chunchiehliang.androidarchitecureexample.view;
+package com.chunchiehliang.androidarchitecureexample.ui.activity;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +22,7 @@ import com.chunchiehliang.androidarchitecureexample.AppExecutors;
 import com.chunchiehliang.androidarchitecureexample.R;
 import com.chunchiehliang.androidarchitecureexample.database.AppDatabase;
 import com.chunchiehliang.androidarchitecureexample.model.Event;
+import com.chunchiehliang.androidarchitecureexample.ui.EventAdapter;
 
 import java.util.List;
 
@@ -29,24 +33,23 @@ public class MainActivity extends AppCompatActivity implements EventAdapter.Item
     private RecyclerView mRecyclerView;
     private FloatingActionButton mFab;
 
+    private AppDatabase mDb;
     private EventAdapter mAdapter;
-
-    private List<Event> eventList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        initDb();
         iniViews();
+        retrieveEvents();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadEvents();
+    private void initDb(){
+        mDb = AppDatabase.getInstance(getApplicationContext());
     }
+
 
     private void iniViews() {
         mRecyclerView = findViewById(R.id.recycler_view_main);
@@ -64,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements EventAdapter.Item
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 final int position = viewHolder.getAdapterPosition();
+
+                List<Event> eventList = mAdapter.getEventList();
+
                 final Event removedEvent = eventList.remove(position);
                 mAdapter.notifyItemRemoved(position);
 
@@ -71,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements EventAdapter.Item
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
-                        AppDatabase.getInstance(getApplicationContext()).eventDao().deleteEvent(removedEvent);
+                        mDb.eventDao().deleteEvent(removedEvent);
                     }
                 });
 
@@ -80,25 +86,13 @@ public class MainActivity extends AppCompatActivity implements EventAdapter.Item
                 mSnackBar.setAction(R.string.undo_string, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        eventList.add(position, removedEvent);
-                        mAdapter.notifyItemInserted(position);
-
                         // Add it back to the database
                         AppExecutors.getInstance().diskIO().execute(new Runnable() {
                             @Override
                             public void run() {
-                                AppDatabase.getInstance(getApplicationContext()).eventDao().insertEvent(removedEvent);
+                                mDb.eventDao().insertEvent(removedEvent);
                             }
                         });
-                    }
-                });
-
-                mSnackBar.addCallback(new Snackbar.Callback() {
-                    @Override
-                    public void onDismissed(Snackbar transientBottomBar, int event) {
-                        super.onDismissed(transientBottomBar, event);
-
-
                     }
                 });
                 mSnackBar.show();
@@ -147,18 +141,12 @@ public class MainActivity extends AppCompatActivity implements EventAdapter.Item
         });
     }
 
-    private void loadEvents() {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+    private void retrieveEvents() {
+        LiveData<List<Event>> eventList = mDb.eventDao().loadAllEvents();
+        eventList.observe(this, new Observer<List<Event>>() {
             @Override
-            public void run() {
-                eventList = AppDatabase.getInstance(getApplicationContext()).eventDao().loadAllEvents();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.setEventList(eventList);
-                    }
-                });
+            public void onChanged(@Nullable List<Event> events) {
+                mAdapter.setEventList(events);
             }
         });
     }
@@ -179,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements EventAdapter.Item
                 } else {
                     event.setBookmarked(true);
                 }
-                AppDatabase.getInstance(getApplicationContext()).eventDao().updateEvent(event);
+                mDb.eventDao().updateEvent(event);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

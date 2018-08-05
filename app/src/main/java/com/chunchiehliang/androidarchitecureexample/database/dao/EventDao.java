@@ -1,5 +1,6 @@
-package com.chunchiehliang.androidarchitecureexample.database;
+package com.chunchiehliang.androidarchitecureexample.database.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -18,7 +19,7 @@ import java.util.List;
 @Dao
 public interface EventDao {
     @Query("SELECT * FROM Event ORDER BY event_date")
-    List<Event> loadAllEvents();
+    LiveData<List<Event>> loadAllEvents();
 
     @Insert
     void insertEvent(Event event);
@@ -30,5 +31,5 @@ public interface EventDao {
     void deleteEvent(Event event);
 
     @Query("SELECT * FROM Event WHERE id = :id")
-    Event loadEventById(int id);
+    LiveData<Event> loadEventById(int id);
 }

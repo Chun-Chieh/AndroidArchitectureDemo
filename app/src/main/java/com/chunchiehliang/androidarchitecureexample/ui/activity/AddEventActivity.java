@@ -1,4 +1,4 @@
-package com.chunchiehliang.androidarchitecureexample.view;
+package com.chunchiehliang.androidarchitecureexample.ui.activity;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -75,7 +75,6 @@ public class AddEventActivity extends AppCompatActivity {
         mBtnAddEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 onSaveButtonClicked();
             }
         });

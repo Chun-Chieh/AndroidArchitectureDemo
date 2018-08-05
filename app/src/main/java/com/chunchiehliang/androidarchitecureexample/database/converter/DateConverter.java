@@ -1,4 +1,4 @@
-package com.chunchiehliang.androidarchitecureexample.database;
+package com.chunchiehliang.androidarchitecureexample.database.converter;
 
 import android.arch.persistence.room.TypeConverter;
 

@@ -6,6 +6,8 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
+import com.chunchiehliang.androidarchitecureexample.database.converter.DateConverter;
+import com.chunchiehliang.androidarchitecureexample.database.dao.EventDao;
 import com.chunchiehliang.androidarchitecureexample.model.Event;
 
 /**
