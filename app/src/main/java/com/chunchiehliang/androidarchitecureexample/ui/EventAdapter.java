@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.chunchiehliang.androidarchitecureexample.Utils.getDayDiff;
+
 /**
  * @author Chun-Chieh Liang on 8/1/18.
  */
@@ -118,20 +120,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             mEventList = eventList;
             result.dispatchUpdatesTo(this);
         }
-    }
-
-
-    private int getDayDiff(Date eventDate) {
-        Calendar currentCal = Calendar.getInstance();
-        currentCal.setTime(new Date());
-        currentCal.set(Calendar.HOUR_OF_DAY, 0);
-        currentCal.set(Calendar.MINUTE, 0);
-        currentCal.set(Calendar.SECOND, 0);
-        currentCal.set(Calendar.MILLISECOND, 0);
-
-        long unit = 1000 * 60 * 60 * 24;
-        long dayDiff = (eventDate.getTime() - currentCal.getTime().getTime()) / unit;
-        return (int) dayDiff;
     }
 
     private String getDayString(int dayDiff) {

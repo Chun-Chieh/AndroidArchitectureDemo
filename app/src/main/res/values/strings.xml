@@ -22,4 +22,10 @@
         <item quantity="one">Tomorrow</item>
         <item quantity="other">%d Days</item>
     </plurals>
+
+
+    <string name="no_data_found">N/A</string>
+
+    <string name="menu_delete">Delete</string>
+    <string name="menu_edit">Edit</string>
 </resources>
