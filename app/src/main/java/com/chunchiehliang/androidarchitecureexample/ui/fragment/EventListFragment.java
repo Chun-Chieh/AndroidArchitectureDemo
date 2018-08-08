@@ -161,7 +161,7 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
             }
         }).attachToRecyclerView(mRecyclerView);
 
-        mFab = rootView.findViewById(R.id.fab_event_list);
+        mFab = rootView.findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,10 +48,9 @@ public class MainActivity extends AppCompatActivity {
         if (f instanceof EventFragment) {
             getSupportActionBar().setTitle(title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        } else if (f instanceof EventListFragment){
+        } else if (f instanceof EventListFragment) {
             getSupportActionBar().setTitle(title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
     }
-
 }

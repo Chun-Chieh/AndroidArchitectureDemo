@@ -83,6 +83,11 @@ public class EventFragment extends Fragment {
             case R.id.edit_event:
                 Toast.makeText(getContext(), "Edit", Toast.LENGTH_SHORT).show();
                 return true;
+
+            case android.R.id.home:
+                // back arrow
+                getActivity().onBackPressed();
+                return true;
             default:
                 super.onOptionsItemSelected(item);
         }
