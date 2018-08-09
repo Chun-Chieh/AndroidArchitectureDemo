@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chunchiehliang.androidarchitecureexample.BaseApp;
 import com.chunchiehliang.androidarchitecureexample.R;
 import com.chunchiehliang.androidarchitecureexample.database.AppDatabase;
 import com.chunchiehliang.androidarchitecureexample.model.Event;
@@ -99,7 +98,7 @@ public class EventFragment extends Fragment {
     private void retrieveEvent(int id) {
         if (id == -1) {
             // no data
-            mTextViewRemain.setText(getString(R.string.no_data_found));
+            mTextViewRemain.setText(getString(R.string.msg_no_data_found));
         } else {
             final LiveData<Event> event = AppDatabase.getInstance(getActivity()).eventDao().loadEventById(id);
             event.observe(this, new Observer<Event>() {

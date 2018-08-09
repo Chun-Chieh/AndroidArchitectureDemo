@@ -27,6 +27,7 @@ public class EventListViewModel extends AndroidViewModel{
         events = database.eventDao().loadAllEvents();
     }
 
+
     public LiveData<List<Event>> getEvents() {
         return events;
     }

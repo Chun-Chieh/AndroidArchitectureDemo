@@ -1,18 +1,27 @@
 <resources>
     <string name="app_name">Event Countdown</string>
 
-    <string name="item_removed_string">%s is removed from the list!</string>
-    <string name="undo_string">undo</string>
+    <string name="msg_item_removed">%s is removed from the list!</string>
+    <string name="msg_undo">undo</string>
+    <string name="msg_no_data_found">N/A</string>
 
-    <string name="event_book_mark">Bookmark</string>
+    <string name="dialog_title">Action</string>
+    <string-array name="dialog_items">
+        <item>Edit</item>
+        <item>Bookmark</item>
+        <item>Delete</item>
+    </string-array>
+
+    <string name="event_book_mark">Bookmark this as important event</string>
     <string name="event_title_label">Title</string>
     <string name="event_description_label">Description</string>
     <string name="event_date_label">Date</string>
 
-    <string name="date_input_hint">Date (MM/DD/YYYY)</string>
-    <string name="add_event">Add Event</string>
-    <string name="error_message_no_input">This field can\'t be blank!</string>
-    <string name="error_message_invalid_date">Invalid date. Try again!</string>
+    <string name="btn_add_event">Add Event</string>
+    <string name="btn_update_event">Update Event</string>
+    <string name="input_hint_date">Date (MM/DD/YYYY)</string>
+    <string name="input_error_message_no_input">This field can\'t be blank!</string>
+    <string name="input_error_message_invalid_date">Invalid date. Try again!</string>
 
 
     <string name="day_today">Today</string>
@@ -22,9 +31,6 @@
         <item quantity="one">Tomorrow</item>
         <item quantity="other">%d Days</item>
     </plurals>
-
-
-    <string name="no_data_found">N/A</string>
 
     <string name="menu_delete">Delete</string>
     <string name="menu_edit">Edit</string>

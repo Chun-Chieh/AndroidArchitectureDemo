@@ -1,9 +1,9 @@
 package com.chunchiehliang.androidarchitecureexample.ui.fragment;
 
-import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -11,16 +11,23 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BaseTransientBottomBar;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.chunchiehliang.androidarchitecureexample.AppExecutors;
 import com.chunchiehliang.androidarchitecureexample.R;
@@ -34,14 +41,16 @@ import com.chunchiehliang.androidarchitecureexample.viewmodel.EventListViewModel
 import java.util.List;
 
 import static android.view.View.GONE;
+import static com.chunchiehliang.androidarchitecureexample.ui.activity.AddEventActivity.EXTRA_EVENT_ID;
 
 public class EventListFragment extends Fragment implements EventAdapter.ItemClickListener {
 
     public static final String TAG = EventListFragment.class.getSimpleName();
 
+    private CoordinatorLayout mCoordinatorLayout;
     private RecyclerView mRecyclerView;
     private FloatingActionButton mFab;
-    ProgressBar mProgressBar;
+    private ProgressBar mProgressBar;
 
     private Context activityContext;
     private AppDatabase mDb;
@@ -79,6 +88,8 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
 
 
     private void iniViews(View rootView) {
+        mCoordinatorLayout = rootView.findViewById(R.id.coordinator_event_list);
+
         mProgressBar = rootView.findViewById(R.id.progressbar_event_list);
         mProgressBar.setVisibility(View.VISIBLE);
 
@@ -99,33 +110,8 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
                 final int position = viewHolder.getAdapterPosition();
 
                 List<Event> eventList = mAdapter.getEventList();
-
-                final Event removedEvent = eventList.remove(position);
+                deleteEvent(eventList.remove(position));
                 mAdapter.notifyItemRemoved(position);
-
-                // Delete the item from the database
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        mDb.eventDao().deleteEvent(removedEvent);
-                    }
-                });
-
-
-                Snackbar mSnackBar = Snackbar.make(rootView.findViewById(R.id.coordinator_event_list), getString(R.string.item_removed_string, removedEvent.getTitle()), Snackbar.LENGTH_LONG);
-                mSnackBar.setAction(R.string.undo_string, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Add it back to the database
-                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                mDb.eventDao().insertEvent(removedEvent);
-                            }
-                        });
-                    }
-                });
-                mSnackBar.show();
             }
 
             @Override
@@ -185,34 +171,89 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
     }
 
     @Override
-    public void onItemClickListener(int itemId) {
-        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
-            ((MainActivity) getActivity()).showDetail(itemId);
-        }
-
-//        Toast.makeText(activityContext, "click listener, event ID:" + itemId, Toast.LENGTH_SHORT).show();
+    public void onItemClickListener(int eventId) {
+//        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+//            ((MainActivity) getActivity()).showDetail(itemId);
+//        }
+        Toast.makeText(activityContext, "event ID: " + eventId, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onItemLongClickListener(Event event) {
+        createItemDialog(event);
+
+    }
+
+    private void createItemDialog(Event event) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+
+        builder.setItems(R.array.dialog_items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // The 'which' argument contains the index position of the selected item
+                        switch (which) {
+                            case 0:
+                                Intent intent = new Intent(activityContext, AddEventActivity.class);
+                                intent.putExtra(EXTRA_EVENT_ID, event.getId());
+                                startActivity(intent);
+                                break;
+                            case 1:
+                                updateEventBookmark(event);
+                                break;
+                            case 2:
+                                deleteEvent(event);
+                                break;
+                            default:
+                                Toast.makeText(activityContext, "default", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_dialog);
+    }
+
+    private void updateEventBookmark(Event event){
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-
                 if (event.isBookmarked()) {
                     event.setBookmarked(false);
                 } else {
                     event.setBookmarked(true);
                 }
+
                 mDb.eventDao().updateEvent(event);
-                getActivity().runOnUiThread(new Runnable() {
+            }
+        });
+    }
+
+    private void deleteEvent(Event event){
+        final Event removedEvent = event;
+        // Delete the event from the database
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.eventDao().deleteEvent(event);
+            }
+        });
+
+        // recover the event
+        Snackbar mSnackBar = Snackbar.make(mCoordinatorLayout, getString(R.string.msg_item_removed, removedEvent.getTitle()), BaseTransientBottomBar.LENGTH_LONG);
+        mSnackBar.setAction(R.string.msg_undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Add it back to the database
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
-                        mAdapter.notifyDataSetChanged();
+                        mDb.eventDao().insertEvent(removedEvent);
                     }
                 });
             }
         });
+        mSnackBar.show();
     }
 
     private class MarginItemDecoration extends RecyclerView.ItemDecoration {
