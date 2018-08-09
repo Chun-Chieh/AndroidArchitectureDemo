@@ -29,6 +29,9 @@ import java.util.Locale;
 import static com.chunchiehliang.androidarchitecureexample.Utils.getDayColor;
 import static com.chunchiehliang.androidarchitecureexample.Utils.getDayDiff;
 
+/**
+ * This fragment is not implemented
+ */
 public class EventFragment extends Fragment {
 
     private static final String KEY_EVENT_ID = "event_id";
@@ -126,8 +129,5 @@ public class EventFragment extends Fragment {
         GradientDrawable drawable = (GradientDrawable) mTextViewRemain.getBackground();
         drawable.setTint(getDayColor(getDayDiff(eventEntry.getDate())));
         mTextViewDate.setText(dateFormat.format(eventEntry.getDate()));
-
-        // set the action bar title
-        ((MainActivity) getActivity()).setupActionBar(eventEntry.getTitle());
     }
 }

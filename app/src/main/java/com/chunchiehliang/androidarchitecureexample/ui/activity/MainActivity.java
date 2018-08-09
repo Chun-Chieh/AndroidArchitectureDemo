@@ -38,19 +38,4 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container,
                         eventFragment, null).commit();
     }
-
-
-    /**
-     * Setup the action bar for corresponding fragments
-     */
-    public void setupActionBar(String title) {
-        Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (f instanceof EventFragment) {
-            getSupportActionBar().setTitle(title);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        } else if (f instanceof EventListFragment) {
-            getSupportActionBar().setTitle(title);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
-    }
 }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -74,13 +76,6 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // set the action bar title
-        ((MainActivity) getActivity()).setupActionBar(getString(R.string.app_name));
-    }
-
     private void initDb() {
         mDb = AppDatabase.getInstance(activityContext);
     }
@@ -127,22 +122,22 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
                     return;
                 }
                 final ColorDrawable backgroundDelete = new ColorDrawable(activityContext.getColor(R.color.materialRed));
-                backgroundDelete.setBounds((int) (viewHolder.itemView.getRight() + dX),
+                backgroundDelete.setBounds(viewHolder.itemView.getRight() + (int)dX,
                         viewHolder.itemView.getTop(),
                         viewHolder.itemView.getRight(),
                         viewHolder.itemView.getBottom());
                 backgroundDelete.draw(c);
 
-//                final Drawable icon = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_launcher_foreground);
-//                int itemHeight = viewHolder.itemView.getBottom() - viewHolder.itemView.getTop();
-//                int iconTop = viewHolder.itemView.getTop() + (itemHeight - icon.getIntrinsicWidth()) / 2;
-//                int iconMargin = (itemHeight - icon.getIntrinsicHeight()) / 2;
-//                int iconLeft = viewHolder.itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
-//                int iconRight = viewHolder.itemView.getRight() - iconMargin;
-//                int iconBottom = iconTop + icon.getIntrinsicHeight();
-//
-//                icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
-//                icon.draw(c);
+                final Drawable icon = ContextCompat.getDrawable(activityContext, R.drawable.ic_delete);
+                int itemHeight = viewHolder.itemView.getBottom() - viewHolder.itemView.getTop();
+                int deleteIconTop = viewHolder.itemView.getTop() + (itemHeight - icon.getIntrinsicWidth()) / 2;
+                int deleteIconMargin = (itemHeight - icon.getIntrinsicHeight()) / 4;
+                int deleteIconLeft = viewHolder.itemView.getRight() - deleteIconMargin - icon.getIntrinsicWidth();
+                int deleteIconRight = viewHolder.itemView.getRight() - deleteIconMargin;
+                int deleteIconBottom = deleteIconTop + icon.getIntrinsicHeight();
+
+                icon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
+                icon.draw(c);
 
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
 
