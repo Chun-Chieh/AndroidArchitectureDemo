@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="md_16dp">16dp</dimen>
-    <dimen name="md_8dp">8dp</dimen>
+    <dimen name="dimen_16dp">16dp</dimen>
+    <dimen name="dimen_8dp">8dp</dimen>
     <dimen name="corner_radius_8dp">8dp</dimen>
 </resources>

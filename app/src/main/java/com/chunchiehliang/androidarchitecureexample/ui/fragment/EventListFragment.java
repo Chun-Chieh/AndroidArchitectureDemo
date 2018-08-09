@@ -19,13 +19,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -55,6 +53,7 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
     private Context activityContext;
     private AppDatabase mDb;
     private EventAdapter mAdapter;
+
 
     public EventListFragment() {
         // Required empty public constructor
@@ -96,7 +95,10 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
         mRecyclerView = rootView.findViewById(R.id.recycler_view_event_list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(activityContext));
-        mRecyclerView.addItemDecoration(new MarginItemDecoration((int) (getResources().getDimension(R.dimen.md_16dp) / getResources().getDisplayMetrics().density)));
+        mRecyclerView.addItemDecoration(new MarginItemDecoration((int) (getResources().getDimension(R.dimen.dimen_16dp) / getResources().getDisplayMetrics().density)));
+
+        // Removes blinks as magic
+        ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         mAdapter = new EventAdapter(activityContext, this);
 
@@ -147,10 +149,22 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
             }
         }).attachToRecyclerView(mRecyclerView);
 
+
         mFab = rootView.findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // todo: test animation
+//                final Slide transition = new Slide(Gravity.BOTTOM);
+//                transition.setDuration(1200L);
+//                TransitionManager.beginDelayedTransition((ViewGroup) mProgressBar.getRootView(), transition);
+//
+//                if(mProgressBar.getVisibility() == VISIBLE){
+//                    mProgressBar.setVisibility(View.GONE);
+//                } else {
+//                    mProgressBar.setVisibility(View.VISIBLE);
+//                }
+
                 Intent intent = new Intent(activityContext, AddEventActivity.class);
                 startActivity(intent);
             }
@@ -170,12 +184,17 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
         });
     }
 
+    /**
+     * This method has been overridden by onBindViewHolder
+     *
+     * @param eventId event id
+     */
     @Override
     public void onItemClickListener(int eventId) {
 //        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
 //            ((MainActivity) getActivity()).showDetail(itemId);
 //        }
-        Toast.makeText(activityContext, "event ID: " + eventId, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activityContext, "event ID: " + eventId, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -188,48 +207,46 @@ public class EventListFragment extends Fragment implements EventAdapter.ItemClic
         AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
 
         builder.setItems(R.array.dialog_items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position of the selected item
-                        switch (which) {
-                            case 0:
-                                Intent intent = new Intent(activityContext, AddEventActivity.class);
-                                intent.putExtra(EXTRA_EVENT_ID, event.getId());
-                                startActivity(intent);
-                                break;
-                            case 1:
-                                updateEventBookmark(event);
-                                break;
-                            case 2:
-                                deleteEvent(event);
-                                break;
-                            default:
-                                Toast.makeText(activityContext, "default", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // The 'which' argument contains the index position of the selected item
+                switch (which) {
+                    case 0:
+                        Intent intent = new Intent(activityContext, AddEventActivity.class);
+                        intent.putExtra(EXTRA_EVENT_ID, event.getId());
+                        startActivity(intent);
+                        break;
+                    case 1:
+                        updateEventBookmark(event);
+                        break;
+                    case 2:
+                        deleteEvent(event);
+                        break;
+                    default:
+                        Toast.makeText(activityContext, "default", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         AlertDialog dialog = builder.create();
         dialog.show();
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_dialog);
     }
 
-    private void updateEventBookmark(Event event){
+    private void updateEventBookmark(Event event) {
+
+
+        event.setBookmarked(!event.isBookmarked());
+
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                if (event.isBookmarked()) {
-                    event.setBookmarked(false);
-                } else {
-                    event.setBookmarked(true);
-                }
-
                 mDb.eventDao().updateEvent(event);
             }
         });
     }
 
-    private void deleteEvent(Event event){
+    private void deleteEvent(Event event) {
         final Event removedEvent = event;
         // Delete the event from the database
         AppExecutors.getInstance().diskIO().execute(new Runnable() {

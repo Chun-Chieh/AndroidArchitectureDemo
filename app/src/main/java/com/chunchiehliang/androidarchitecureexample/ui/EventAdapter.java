@@ -2,6 +2,7 @@ package com.chunchiehliang.androidarchitecureexample.ui;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +16,6 @@ import com.chunchiehliang.androidarchitecureexample.R;
 import com.chunchiehliang.androidarchitecureexample.model.Event;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -35,6 +34,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     private Context mContext;
     private List<Event> mEventList;
+    private RecyclerView mRecyclerView;
 
     final private ItemClickListener mItemClickListener;
 
@@ -55,6 +55,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         return new EventViewHolder(view);
     }
 
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        mRecyclerView = recyclerView;
+    }
+
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
@@ -67,11 +73,23 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         holder.mTextViewRemainDay.setText(getDayString(dayDiff));
         holder.mTextViewRemainDay.setTextColor(getDayColor(dayDiff));
 
+
         if (event.isBookmarked()) {
             holder.mImageBookMark.setVisibility(View.VISIBLE);
         } else {
             holder.mImageBookMark.setVisibility(View.INVISIBLE);
         }
+
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // expand the text view lines
+                boolean isSingleLine = holder.mTextViewDescription.getLineCount() == 1;
+                holder.mTextViewDescription.setSingleLine(!isSingleLine);
+                TransitionManager.beginDelayedTransition(mRecyclerView);
+            }
+        });
     }
 
     @Override
@@ -120,6 +138,17 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             mEventList = eventList;
             result.dispatchUpdatesTo(this);
         }
+    }
+
+
+    public void removeEvent(int position) {
+        mEventList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void restoreEvent(Event event, int position) {
+        mEventList.add(position, event);
+        notifyItemInserted(position);
     }
 
     private String getDayString(int dayDiff) {
