@@ -32,4 +32,7 @@ public interface EventDao {
 
     @Query("SELECT * FROM Event WHERE id = :id")
     LiveData<Event> loadEventById(int id);
+
+    @Query("SELECT * FROM Event WHERE event_bookmark = 1 ORDER BY event_date")
+    LiveData<List<Event>> loadEventsWithBookmark();
 }

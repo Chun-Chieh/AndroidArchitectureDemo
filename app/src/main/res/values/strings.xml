@@ -5,20 +5,32 @@
     <string name="msg_undo">undo</string>
     <string name="msg_no_data_found">N/A</string>
 
+
     <string name="dialog_title">Action</string>
+
+
+
+
     <string-array name="dialog_items">
         <item>Edit</item>
         <item>Bookmark</item>
         <item>Delete</item>
     </string-array>
 
+    <string name="bottom_sheet_action_edit">Edit</string>
+    <string name="bottom_sheet_action_bookmark">Bookmark</string>
+    <string name="bottom_sheet_action_remove_bookmark">Remove Bookmark</string>
+    <string name="bottom_sheet_action_delete">Delete</string>
+    <string name="bottom_sheet_action_share">Share</string>
+    <string name="bottom_sheet_msg_share_event">Hey! What do you think about %s? 😆</string>
+
     <string name="event_book_mark">Bookmark this as important event</string>
     <string name="event_title_label">Title</string>
     <string name="event_description_label">Description</string>
     <string name="event_date_label">Date</string>
 
-    <string name="btn_add_event">Add Event</string>
-    <string name="btn_update_event">Update Event</string>
+    <string name="add_event">Add Event</string>
+    <string name="update_event">Update Event</string>
     <string name="input_hint_date">Date (MM/DD/YYYY)</string>
     <string name="input_error_message_no_input">This field can\'t be blank!</string>
     <string name="input_error_message_invalid_date">Invalid date. Try again!</string>
@@ -32,6 +44,9 @@
         <item quantity="other">%d Days</item>
     </plurals>
 
-    <string name="menu_delete">Delete</string>
-    <string name="menu_edit">Edit</string>
+    <string name="menu_action_settings">Settings</string>
+    <string name="menu_action_show_bookmarked_events">Bookmarked events</string>
+    <string name="menu_action_show_all_events">All events</string>
+    <string name="bottom_sheet_action_add_to_calendar">Add to calendar</string>
+
 </resources>

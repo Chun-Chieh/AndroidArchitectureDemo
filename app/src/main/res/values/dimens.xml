@@ -3,4 +3,5 @@
     <dimen name="dimen_16dp">16dp</dimen>
     <dimen name="dimen_8dp">8dp</dimen>
     <dimen name="corner_radius_8dp">8dp</dimen>
+    <dimen name="corner_bottom_sheet">20dp</dimen>
 </resources>

@@ -21,13 +21,12 @@ import android.widget.Toast;
 import com.chunchiehliang.androidarchitecureexample.R;
 import com.chunchiehliang.androidarchitecureexample.database.AppDatabase;
 import com.chunchiehliang.androidarchitecureexample.model.Event;
-import com.chunchiehliang.androidarchitecureexample.ui.activity.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import static com.chunchiehliang.androidarchitecureexample.Utils.getDayColor;
-import static com.chunchiehliang.androidarchitecureexample.Utils.getDayDiff;
+import static com.chunchiehliang.androidarchitecureexample.util.Utils.getDayColor;
+import static com.chunchiehliang.androidarchitecureexample.util.Utils.getDayDiff;
 
 /**
  * This fragment is not implemented
@@ -76,16 +75,12 @@ public class EventFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.event_detail, menu);
+//        inflater.inflate(R.menu.event_detail, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.edit_event:
-                Toast.makeText(getContext(), "Edit", Toast.LENGTH_SHORT).show();
-                return true;
-
             case android.R.id.home:
                 // back arrow
                 getActivity().onBackPressed();

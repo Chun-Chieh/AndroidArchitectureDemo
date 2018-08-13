@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -25,8 +26,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import static com.chunchiehliang.androidarchitecureexample.Utils.dateToString;
-import static com.chunchiehliang.androidarchitecureexample.Utils.stringToDate;
+import static com.chunchiehliang.androidarchitecureexample.util.Utils.dateToString;
+import static com.chunchiehliang.androidarchitecureexample.util.Utils.stringToDate;
 import static java.lang.Integer.parseInt;
 
 public class AddEventActivity extends AppCompatActivity {
@@ -103,7 +104,12 @@ public class AddEventActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(EXTRA_EVENT_ID)) {
-            mBtnAddEvent.setText(R.string.btn_update_event);
+
+            if(getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(R.string.update_event);
+            }
+
+            mBtnAddEvent.setText(R.string.update_event);
 
             mEventId = intent.getIntExtra(EXTRA_EVENT_ID, DEFAULT_EVENT_ID);
 
@@ -125,6 +131,18 @@ public class AddEventActivity extends AppCompatActivity {
             });
         }
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void onSaveButtonClicked() {

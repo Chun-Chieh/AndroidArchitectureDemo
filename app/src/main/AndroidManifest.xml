@@ -17,7 +17,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.AddEventActivity" />
+        <activity android:name=".ui.activity.AddEventActivity"
+            android:label="@string/add_event"/>
 
         <meta-data
             android:name="preloaded_fonts"

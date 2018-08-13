@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
         // Add event list fragment if this is first creation
         if (savedInstanceState == null) {
             EventListFragment fragment = EventListFragment.newInstance();
-
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment, EventListFragment.TAG).commit();
         }
     }

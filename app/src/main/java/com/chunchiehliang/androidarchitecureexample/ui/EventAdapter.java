@@ -15,19 +15,17 @@ import android.widget.TextView;
 import com.chunchiehliang.androidarchitecureexample.R;
 import com.chunchiehliang.androidarchitecureexample.model.Event;
 
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
-import static com.chunchiehliang.androidarchitecureexample.Utils.getDayDiff;
+import static com.chunchiehliang.androidarchitecureexample.util.Utils.dateToString;
+import static com.chunchiehliang.androidarchitecureexample.util.Utils.getDayDiff;
 
 /**
  * @author Chun-Chieh Liang on 8/1/18.
  */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
-
-    private static final String DATE_FORMAT = "MM/dd/yyyy";
 
     private static final int DATE_TODAY = 0;
     private static final int DATE_PAST = -1;
@@ -37,10 +35,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     private RecyclerView mRecyclerView;
 
     final private ItemClickListener mItemClickListener;
-
-    // Date formatter
-    private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
-
 
     public EventAdapter(Context context, ItemClickListener clickListener) {
         mContext = context;
@@ -67,7 +61,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         final Event event = mEventList.get(position);
         holder.mTextViewTitle.setText(event.getTitle());
         holder.mTextViewDescription.setText(event.getDescription());
-        holder.mTextViewDate.setText(dateFormat.format(event.getDate()));
+        holder.mTextViewDate.setText(dateToString(event.getDate()));
 
         int dayDiff = getDayDiff(event.getDate());
         holder.mTextViewRemainDay.setText(getDayString(dayDiff));
@@ -141,14 +135,25 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     }
 
 
-    public void removeEvent(int position) {
-        mEventList.remove(position);
-        notifyItemRemoved(position);
-    }
+//    public Event removeEvent(int position) {
+//        Event removedEvent = mEventList.remove(position);
+//        notifyItemRemoved(position);
+//        return removedEvent;
+//    }
+//
+//    public void restoreEvent(Event event, int position) {
+//        mEventList.add(position, event);
+//        notifyItemInserted(position);
+//    }
 
-    public void restoreEvent(Event event, int position) {
-        mEventList.add(position, event);
-        notifyItemInserted(position);
+    public List<Event> getBookmarkedEventList() {
+        List<Event> bookmarkedEvents = new ArrayList<>();
+        for (Event e : mEventList) {
+            if (e.isBookmarked()) {
+                bookmarkedEvents.add(e);
+            }
+        }
+        return bookmarkedEvents;
     }
 
     private String getDayString(int dayDiff) {
